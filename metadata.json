@@ -1,0 +1,6 @@
+{
+  "name": "EcoTrace Web",
+  "description": "Public aggregate dashboard for monitoring global carbon footprint across vehicles and timeframes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["Data Visualization", "Environmental Analytics"]
+}
