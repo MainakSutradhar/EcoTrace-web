@@ -9,3 +9,274 @@
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
 }
+
+@keyframes sync-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer components {
+  .app-shell {
+    @apply min-h-screen flex flex-col font-sans selection:bg-emerald-100 pb-12;
+  }
+
+  .sync-toast {
+    @apply fixed bottom-10 right-10 z-[100] bg-white border border-slate-200 shadow-2xl p-6 rounded-3xl flex items-center gap-4;
+    animation: sync-toast-in 220ms ease-out both;
+  }
+
+  .sync-toast-icon {
+    @apply w-5 h-5 text-emerald-600 animate-spin;
+  }
+
+  .sync-toast-title {
+    @apply text-slate-700 font-bold uppercase tracking-widest text-[10px];
+  }
+
+  .sync-toast-copy {
+    @apply text-slate-400 text-[9px] font-medium leading-none;
+  }
+
+  .app-header {
+    @apply flex flex-col sm:flex-row items-center justify-between px-6 md:px-10 py-6 border-b border-slate-200 bg-white sticky top-0 z-50 gap-4 sm:gap-0;
+  }
+
+  .app-title {
+    @apply text-lg sm:text-xl font-bold tracking-tight text-emerald-700 uppercase;
+  }
+
+  .app-title-muted {
+    @apply text-slate-400 font-normal;
+  }
+
+  .app-subtitle {
+    @apply text-[10px] text-slate-500 uppercase tracking-widest mt-1 font-semibold truncate;
+  }
+
+  .header-actions {
+    @apply flex items-center gap-4 sm:gap-6;
+  }
+
+  .simulate-button {
+    @apply flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-50;
+  }
+
+  .simulate-button-default {
+    @apply bg-slate-900 text-white hover:bg-slate-800;
+  }
+
+  .simulate-button-success {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .simulate-button-icon {
+    @apply w-3 h-3;
+  }
+
+  .simulate-button-icon-spin {
+    @apply animate-spin;
+  }
+
+  .active-tracking {
+    @apply text-right hidden md:block;
+  }
+
+  .active-tracking-label {
+    @apply text-[10px] text-slate-400 uppercase font-bold tracking-tight;
+  }
+
+  .active-tracking-value {
+    @apply text-lg font-mono font-bold text-slate-800;
+  }
+
+  .header-divider {
+    @apply h-10 w-[1px] bg-slate-200 hidden md:block;
+  }
+
+  .live-badge {
+    @apply bg-emerald-50 px-4 py-2 rounded-full flex items-center gap-2;
+  }
+
+  .live-badge-dot {
+    @apply w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse;
+  }
+
+  .live-badge-text {
+    @apply text-[10px] font-bold text-emerald-700 uppercase tracking-wider whitespace-nowrap;
+  }
+
+  .app-main {
+    @apply flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-10 w-full flex flex-col gap-6 sm:gap-10;
+  }
+
+  .error-banner {
+    @apply p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-xs font-bold uppercase tracking-wider text-center;
+  }
+
+  .metric-card-grid {
+    @apply grid grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-8;
+  }
+
+  .chart-row-primary {
+    @apply grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8;
+  }
+
+  .chart-row-main {
+    @apply lg:col-span-3;
+  }
+
+  .chart-row-full {
+    @apply lg:col-span-4;
+  }
+
+  .chart-row-side {
+    @apply lg:col-span-1;
+  }
+
+  .trend-chart-frame {
+    @apply h-[300px] sm:h-[400px] lg:h-[450px];
+  }
+
+  .trend-chart-frame .recharts-wrapper,
+  .trend-chart-frame .recharts-surface,
+  .monthly-chart-frame .recharts-wrapper,
+  .monthly-chart-frame .recharts-surface {
+    @apply outline-none;
+  }
+
+  .vehicle-chart-frame {
+    @apply h-[500px] sm:h-[600px] lg:h-[450px];
+  }
+
+  .chart-row-secondary {
+    @apply grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8;
+  }
+
+  .monthly-chart-column {
+    @apply lg:col-span-2;
+  }
+
+  .monthly-chart-frame {
+    @apply h-[300px] sm:h-[400px] lg:h-full min-h-[350px];
+  }
+
+  .info-column {
+    @apply flex flex-col gap-6 sm:gap-8;
+  }
+
+  .sustainability-panel {
+    @apply bg-slate-900 p-8 rounded-3xl text-white relative overflow-hidden flex-1;
+  }
+
+  .panel-content {
+    @apply relative z-10;
+  }
+
+  .panel-title,
+  .metadata-title {
+    @apply text-xl font-bold mb-2 flex items-center gap-2;
+  }
+
+  .metadata-title {
+    @apply text-slate-800;
+  }
+
+  .panel-title-icon {
+    @apply w-5 h-5;
+  }
+
+  .panel-title-icon-accent {
+    @apply text-emerald-400;
+  }
+
+  .metadata-title-icon {
+    @apply text-emerald-600;
+  }
+
+  .panel-copy {
+    @apply text-slate-400 text-sm leading-relaxed mb-6;
+  }
+
+  .panel-button {
+    @apply px-6 py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold rounded-lg transition-colors uppercase tracking-widest;
+  }
+
+  .sustainability-glow {
+    @apply absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-3xl -mr-32 -mt-32 rounded-full transition-transform;
+  }
+
+  .sustainability-panel:hover .sustainability-glow {
+    @apply scale-110;
+  }
+
+  .metadata-panel {
+    @apply bg-white border border-slate-200 p-8 rounded-3xl flex flex-col justify-between;
+  }
+
+  .metadata-copy {
+    @apply text-slate-500 text-sm leading-relaxed;
+  }
+
+  .last-sync {
+    @apply text-[10px] text-slate-400 font-bold uppercase mt-4;
+  }
+
+  .app-footer {
+    @apply bg-white border-t border-slate-200 px-6 md:px-10 py-6 mt-auto;
+  }
+
+  .footer-inner {
+    @apply max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-tight gap-4;
+  }
+
+  .footer-meta {
+    @apply flex gap-8;
+  }
+
+  .footer-credit {
+    @apply flex gap-6 italic text-slate-300 normal-case font-medium;
+  }
+
+  .stats-card {
+    @apply bg-white p-6 rounded-2xl border border-slate-100 shadow-sm;
+  }
+
+  .stats-card-header {
+    @apply flex justify-between items-start mb-4;
+  }
+
+  .stats-card-title {
+    @apply text-xs font-semibold text-slate-400 uppercase tracking-widest;
+  }
+
+  .stats-card-icon {
+    @apply p-1.5 bg-emerald-50 rounded-lg;
+  }
+
+  .stats-card-icon-svg {
+    @apply w-4 h-4 text-emerald-600;
+  }
+
+  .stats-card-value-row {
+    @apply flex items-baseline mt-1;
+  }
+
+  .stats-card-value-row-loading {
+    @apply invisible;
+  }
+
+  .stats-card-value {
+    @apply text-xl sm:text-2xl md:text-3xl font-bold font-mono text-slate-900 tracking-tight;
+  }
+
+  .stats-card-unit {
+    @apply ml-1 sm:ml-2 text-[10px] sm:text-sm font-medium text-slate-400 font-sans italic;
+  }
+
+}

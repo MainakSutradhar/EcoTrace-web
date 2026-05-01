@@ -17,9 +17,14 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     },
+    "types": [
+      "react",
+      "react-dom",
+      "vite/client"
+    ],
     "allowImportingTsExtensions": true,
     "noEmit": true
   }

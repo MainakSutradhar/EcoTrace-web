@@ -5,6 +5,7 @@ export const MOCK_SUMMARY: SummaryStats = {
   weekly: 3164.2,
   monthly: 12450.5,
   yearly: 148900.0,
+  allTime: 1842500.0,
   dailyChange: -4.2,
 };
 
