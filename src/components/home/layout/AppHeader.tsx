@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { CheckCircle2, Loader2, PlayCircle } from 'lucide-react';
+import { CheckCircle2, Loader2, PlayCircle, Menu } from 'lucide-react';
 import { useDashboardData } from '@/components/home/providers/DashboardDataProvider';
 import { apiService } from '@/services/apiService';
+import { SideDrawer } from './SideDrawer';
 
 const vehicleTypes = ['car', 'bus', 'motorbike', 'train'];
 
@@ -19,6 +20,7 @@ export function AppHeader() {
   const { refreshData, setError, summaryStats } = useDashboardData();
   const [isSimulating, setIsSimulating] = useState(false);
   const [lastProcessed, setLastProcessed] = useState<number | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleSimulateTrace = async () => {
     setIsSimulating(true);
@@ -39,14 +41,34 @@ export function AppHeader() {
   };
 
   return (
-    <header className="app-header">
-      <div>
-        <h1 className="app-title">
-          ECOTRACE <span className="app-title-muted">| Public Analytics</span>
-        </h1>
-        <p className="app-subtitle">Global Aggregate Emission Monitoring</p>
-      </div>
-      <div className="header-actions">
+    <>
+      <SideDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+      <header className="app-header">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setIsDrawerOpen(true)}
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors group lg:hidden"
+            aria-label="Open menu"
+          >
+            <Menu className="w-6 h-6 text-slate-500 group-hover:text-emerald-600" />
+          </button>
+          
+          <button 
+            onClick={() => setIsDrawerOpen(true)}
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors group hidden lg:block"
+            aria-label="Open menu"
+          >
+            <Menu className="w-6 h-6 text-slate-500 group-hover:text-emerald-600" />
+          </button>
+
+          <div>
+            <h1 className="app-title">
+              ECOTRACE <span className="app-title-muted">| Public Analytics</span>
+            </h1>
+            <p className="app-subtitle">Global Aggregate Emission Monitoring</p>
+          </div>
+        </div>
+        <div className="header-actions">
         <button
           onClick={handleSimulateTrace}
           disabled={isSimulating}
@@ -73,5 +95,6 @@ export function AppHeader() {
         </div>
       </div>
     </header>
+  </>
   );
 }
