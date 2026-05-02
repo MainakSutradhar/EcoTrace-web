@@ -23,6 +23,8 @@ export const MonthlyTrendChart: React.FC<MonthlyTrendChartProps> = ({ data, titl
               axisLine={false} 
               tickLine={false} 
               tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 700 }}
+              interval={0}
+              padding={{ left: 15, right: 15 }}
               dy={10}
             />
             <YAxis 
