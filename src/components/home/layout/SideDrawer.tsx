@@ -33,7 +33,7 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: 0 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100]"
