@@ -8,9 +8,10 @@ interface StatsCardProps {
   unit?: string;
   index: number;
   icon: LucideIcon;
+  userCount?: number;
 }
 
-export const StatsCard: React.FC<StatsCardProps> = ({ title, value, unit, index, icon: Icon }) => {
+export const StatsCard: React.FC<StatsCardProps> = ({ title, value, unit, index, icon: Icon, userCount }) => {
   const hasValue = value !== undefined;
 
   return (
@@ -31,6 +32,11 @@ export const StatsCard: React.FC<StatsCardProps> = ({ title, value, unit, index,
           <h3 className="stats-card-value">{hasValue ? value : '---'}</h3>
           {unit && <span className="stats-card-unit">{unit}</span>}
         </div>
+        {userCount !== undefined && (
+          <p className="stats-card-subtitle">
+            {userCount === 1 ? 'Total User:' : 'Total Users:'} {userCount.toLocaleString()}
+          </p>
+        )}
       </div>
     </motion.div>
   );

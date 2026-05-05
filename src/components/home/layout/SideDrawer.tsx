@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
+import { Link } from 'react-router-dom';
 import { 
   Home, 
   Truck, 
@@ -16,13 +17,13 @@ interface SideDrawerProps {
 }
 
 const menuItems = [
-  { icon: Home, label: 'Home' },
-  { icon: Truck, label: 'Vehicle' },
-  { icon: MapIcon, label: 'Map' },
-  { icon: BarChart3, label: 'Statewise' },
-  { icon: Info, label: 'About' },
-  { icon: Database, label: 'Data collection' },
-  { icon: Mail, label: 'Contact us' },
+  { icon: Home, label: 'Home', path: '/' },
+  { icon: Truck, label: 'Vehicle', path: '/vehicle' },
+  { icon: MapIcon, label: 'Map', path: '/map' },
+  { icon: BarChart3, label: 'Statewise', path: '/statewise' },
+  { icon: Info, label: 'About', path: '/about' },
+  { icon: Database, label: 'Data collection', path: '/data-collection' },
+  { icon: Mail, label: 'Contact us', path: '/contact' },
 ];
 
 export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
@@ -64,16 +65,14 @@ export function SideDrawer({ isOpen, onClose }: SideDrawerProps) {
               <ul className="space-y-1 px-3">
                 {menuItems.map((item) => (
                   <li key={item.label}>
-                    <button
-                      onClick={() => {
-                        // Functionality to be added later
-                        onClose();
-                      }}
+                    <Link
+                      to={item.path}
+                      onClick={onClose}
                       className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all duration-200 group"
                     >
                       <item.icon className="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors" />
                       <span className="font-medium text-sm">{item.label}</span>
-                    </button>
+                    </Link>
                   </li>
                 ))}
               </ul>

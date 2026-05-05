@@ -244,7 +244,7 @@ body {
   }
 
   .stats-card {
-    @apply bg-white p-6 rounded-2xl border border-slate-100 shadow-sm;
+    @apply bg-white p-6 rounded-2xl border border-slate-100 shadow-sm overflow-hidden min-h-[180px];
   }
 
   .stats-card-header {
@@ -264,7 +264,7 @@ body {
   }
 
   .stats-card-value-row {
-    @apply flex items-baseline mt-1;
+    @apply flex flex-wrap items-baseline gap-2 mt-1;
   }
 
   .stats-card-value-row-loading {
@@ -276,7 +276,11 @@ body {
   }
 
   .stats-card-unit {
-    @apply ml-1 sm:ml-2 text-[10px] sm:text-sm font-medium text-slate-400 font-sans italic;
+    @apply text-[10px] sm:text-sm font-medium text-slate-400 font-sans italic;
+  }
+
+  .stats-card-subtitle {
+    @apply mt-3 text-sm text-slate-500 leading-5 min-h-[1.25rem];
   }
 
 }
