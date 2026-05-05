@@ -6,7 +6,7 @@ import {
   PublicVehicleStatsResponse,
 } from '../types';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://ecotracebackend-d9mz.onrender.com'; 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://ecotracebackend-pjo2.onrender.com'; 
 const BASE_URL = `${BACKEND_URL}/api/public/stats`;
 const STATE_BASE_URL = `${BASE_URL}/state`;
 

@@ -19,7 +19,6 @@ export function MetricsGrid() {
         unit="kg CO2"
         index={0}
         icon={LayoutDashboard}
-        userCount={summaryStats?.today.user_count}
       />
       <StatsCard
         title="Weekly Avg"
@@ -27,7 +26,6 @@ export function MetricsGrid() {
         unit="kg CO2"
         index={1}
         icon={Calendar}
-        userCount={summaryStats?.this_week.user_count}
       />
       <StatsCard
         title="Monthly"
@@ -35,7 +33,6 @@ export function MetricsGrid() {
         unit="kg CO2"
         index={2}
         icon={BarChart3}
-        userCount={summaryStats?.this_month.user_count}
       />
       <StatsCard
         title="Yearly Forecast"
@@ -43,7 +40,6 @@ export function MetricsGrid() {
         unit="kg CO2"
         index={3}
         icon={Database}
-        userCount={summaryStats?.this_year.user_count}
       />
       <StatsCard
         title="All Time"
@@ -51,7 +47,6 @@ export function MetricsGrid() {
         unit="kg CO2"
         index={4}
         icon={Archive}
-        userCount={summaryStats?.all_time.user_count}
       />
     </div>
   );
