@@ -21,7 +21,7 @@ const menuItems = [
   { icon: Truck, label: 'Vehicle', path: '/vehicle' },
   { icon: MapIcon, label: 'Map', path: '/map' },
   { icon: BarChart3, label: 'Statewise', path: '/statewise' },
-  { icon: Info, label: 'About', path: '/about' },
+  { icon: Info, label: 'About Us', path: '/about' },
   { icon: Database, label: 'Data collection', path: '/data-collection' },
   { icon: Mail, label: 'Contact us', path: '/contact' },
 ];
