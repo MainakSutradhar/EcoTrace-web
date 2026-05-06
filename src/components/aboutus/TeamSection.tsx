@@ -75,9 +75,7 @@ export const TeamSection: React.FC = () => {
               key={member.name}
               className={`lg:col-span-2 ${index === 3 ? 'lg:col-start-2' : ''}`}
             >
-
               <TeamCard {...member} />
-
             </div>
           ))}
         </div>
