@@ -12,10 +12,11 @@ export interface VehicleEmission {
 }
 
 export interface VehicleStatsDataPoint {
-  vehicle_type: string;
+  type: string;
   distance_km: number;
   carbon_kg: number;
-  user_count?: number;
+  user_count: number;
+  percentage?: number;
 }
 
 export interface PublicVehicleStatsResponse {
@@ -23,8 +24,9 @@ export interface PublicVehicleStatsResponse {
   total: {
     distance_km: number;
     carbon_kg: number;
+    user_count: number;
   };
-  data: VehicleStatsDataPoint[];
+  vehicles: VehicleStatsDataPoint[];
 }
 
 export interface PublicStatsResponse {

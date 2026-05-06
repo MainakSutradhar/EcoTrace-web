@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { apiService, transformToTrendData } from '@/services/apiService';
-import { EmissionDataPoint, PublicStatsSummaryResponse } from '@/types';
+import { EmissionDataPoint, PublicStatsSummaryResponse, PublicVehicleStatsResponse } from '@/types';
 
 interface DashboardDataContextValue {
   loading: boolean;
@@ -8,6 +8,7 @@ interface DashboardDataContextValue {
   summaryStats: PublicStatsSummaryResponse | null;
   trendData: EmissionDataPoint[];
   monthlyTrend: EmissionDataPoint[];
+  vehicleStats: PublicVehicleStatsResponse | null;
   refreshData: () => Promise<void>;
   setError: (error: string | null) => void;
 }
@@ -24,6 +25,7 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
   const [summaryStats, setSummaryStats] = useState<PublicStatsSummaryResponse | null>(null);
   const [trendData, setTrendData] = useState<EmissionDataPoint[]>([]);
   const [monthlyTrend, setMonthlyTrend] = useState<EmissionDataPoint[]>([]);
+  const [vehicleStats, setVehicleStats] = useState<PublicVehicleStatsResponse | null>(null);
 
   const refreshData = useCallback(async () => {
     setSummaryStats(null);
@@ -37,6 +39,7 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
         apiService.getSummary(),
         apiService.getStats('monthly'),
         apiService.getLast7Days(),
+        apiService.getVehicles(),
       ]);
 
       const results = (await Promise.race([resultsPromise, timeoutPromise])) as PromiseSettledResult<any>[];
@@ -49,6 +52,10 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
 
       if (results[2].status === 'fulfilled' && results[2].value?.data) {
         setTrendData(transformToTrendData(results[2].value.data));
+      }
+
+      if (results[3].status === 'fulfilled' && results[3].value) {
+        setVehicleStats(results[3].value);
       }
 
       setError(null);
@@ -71,10 +78,11 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
       summaryStats,
       trendData,
       monthlyTrend,
+      vehicleStats,
       refreshData,
       setError,
     }),
-    [loading, error, summaryStats, trendData, monthlyTrend, refreshData],
+    [loading, error, summaryStats, trendData, monthlyTrend, vehicleStats, refreshData],
   );
 
   return <DashboardDataContext.Provider value={value}>{children}</DashboardDataContext.Provider>;
