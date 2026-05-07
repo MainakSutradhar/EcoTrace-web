@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { VehiclePieChart } from '@/components/vehicleComparison/charts/VehiclePieChart';
 import { useDashboardData } from '@/components/home/providers/DashboardDataProvider';
@@ -13,7 +13,11 @@ const VEHICLE_COLORS: Record<string, string> = {
 };
 
 export default function VehiclePage() {
-  const { vehicleStats, loading } = useDashboardData();
+  const { vehicleStats, vehicleLoading, loadVehicleStats } = useDashboardData();
+
+  useEffect(() => {
+    loadVehicleStats();
+  }, [loadVehicleStats]);
 
   const chartData = useMemo(() => {
     if (!vehicleStats?.vehicles) return [];
@@ -37,7 +41,7 @@ export default function VehiclePage() {
         <p className="text-slate-50 mt-2">Distribution of carbon emissions by vehicle type.</p>
       </header>
 
-      {loading ? (
+      {vehicleLoading ? (
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500" />
         </div>

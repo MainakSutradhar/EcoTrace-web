@@ -9,10 +9,17 @@ import {
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://ecotracebackend-d9mz.onrender.com'; 
 const BASE_URL = `${BACKEND_URL}/api/public/stats`;
 const STATE_BASE_URL = `${BASE_URL}/state`;
+const inFlightRequests = new Map<string, Promise<unknown>>();
 
 const fetchJson = async <T>(url: string): Promise<T> => {
+  const existingRequest = inFlightRequests.get(url) as Promise<T> | undefined;
+
+  if (existingRequest) {
+    return existingRequest;
+  }
+
   console.log(`Fetching: ${url}`);
-  try {
+  const request = (async () => {
     const response = await fetch(url, {
       method: 'GET',
       mode: 'cors',
@@ -37,9 +44,17 @@ const fetchJson = async <T>(url: string): Promise<T> => {
     }
 
     return response.json();
+  })();
+
+  inFlightRequests.set(url, request);
+
+  try {
+    return await request;
   } catch (error) {
     console.error(`Network or fetch error for ${url}:`, error);
     throw error;
+  } finally {
+    inFlightRequests.delete(url);
   }
 };
 

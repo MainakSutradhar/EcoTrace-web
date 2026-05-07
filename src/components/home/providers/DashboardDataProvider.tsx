@@ -9,6 +9,8 @@ interface DashboardDataContextValue {
   trendData: EmissionDataPoint[];
   monthlyTrend: EmissionDataPoint[];
   vehicleStats: PublicVehicleStatsResponse | null;
+  vehicleLoading: boolean;
+  loadVehicleStats: () => Promise<void>;
   refreshData: () => Promise<void>;
   setError: (error: string | null) => void;
 }
@@ -26,6 +28,7 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
   const [trendData, setTrendData] = useState<EmissionDataPoint[]>([]);
   const [monthlyTrend, setMonthlyTrend] = useState<EmissionDataPoint[]>([]);
   const [vehicleStats, setVehicleStats] = useState<PublicVehicleStatsResponse | null>(null);
+  const [vehicleLoading, setVehicleLoading] = useState(false);
 
   const refreshData = useCallback(async () => {
     setSummaryStats(null);
@@ -39,7 +42,6 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
         apiService.getSummary(),
         apiService.getStats('monthly'),
         apiService.getLast7Days(),
-        apiService.getVehicles(),
       ]);
 
       const results = (await Promise.race([resultsPromise, timeoutPromise])) as PromiseSettledResult<any>[];
@@ -54,10 +56,6 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
         setTrendData(transformToTrendData(results[2].value.data));
       }
 
-      if (results[3].status === 'fulfilled' && results[3].value) {
-        setVehicleStats(results[3].value);
-      }
-
       setError(null);
     } catch (err) {
       console.warn('Sync issue:', err);
@@ -66,6 +64,23 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
       setLoading(false);
     }
   }, []);
+
+  const loadVehicleStats = useCallback(async () => {
+    if (vehicleStats || vehicleLoading) return;
+
+    setVehicleLoading(true);
+
+    try {
+      const response = await apiService.getVehicles();
+      setVehicleStats(response);
+      setError(null);
+    } catch (err) {
+      console.warn('Vehicle stats load failed:', err);
+      setError(`Notice: ${err instanceof Error ? err.message : 'Could not load vehicle stats'}.`);
+    } finally {
+      setVehicleLoading(false);
+    }
+  }, [vehicleStats, vehicleLoading]);
 
   useEffect(() => {
     refreshData();
@@ -79,10 +94,12 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
       trendData,
       monthlyTrend,
       vehicleStats,
+      vehicleLoading,
+      loadVehicleStats,
       refreshData,
       setError,
     }),
-    [loading, error, summaryStats, trendData, monthlyTrend, vehicleStats, refreshData],
+    [loading, error, summaryStats, trendData, monthlyTrend, vehicleStats, vehicleLoading, loadVehicleStats, refreshData],
   );
 
   return <DashboardDataContext.Provider value={value}>{children}</DashboardDataContext.Provider>;
