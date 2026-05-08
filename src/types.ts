@@ -5,6 +5,8 @@ export interface EmissionDataPoint {
   user_count?: number;
 }
 
+export type TrendRange = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
 export interface VehicleEmission {
   type: string;
   emissions: number;
@@ -55,7 +57,7 @@ export interface StateStatsDataPoint {
 
 export interface PublicStateStatsResponse {
   range: string;
-  total: {
+  total?: {
     distance_km: number;
     carbon_kg: number;
   };

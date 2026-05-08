@@ -1,12 +1,28 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { apiService, transformToTrendData } from '@/services/apiService';
-import { EmissionDataPoint, PublicStatsSummaryResponse, PublicVehicleStatsResponse } from '@/types';
+import {
+  EmissionDataPoint,
+  PublicStatsResponse,
+  PublicStatsSummaryResponse,
+  PublicVehicleStatsResponse,
+  TrendRange,
+} from '@/types';
+
+type TrendDataByRange = Record<TrendRange, EmissionDataPoint[]>;
+
+const emptyTrendDataByRange: TrendDataByRange = {
+  daily: [],
+  weekly: [],
+  monthly: [],
+  yearly: [],
+};
 
 interface DashboardDataContextValue {
   loading: boolean;
   error: string | null;
   summaryStats: PublicStatsSummaryResponse | null;
   trendData: EmissionDataPoint[];
+  trendDataByRange: TrendDataByRange;
   monthlyTrend: EmissionDataPoint[];
   vehicleStats: PublicVehicleStatsResponse | null;
   vehicleLoading: boolean;
@@ -26,12 +42,14 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
   const [error, setError] = useState<string | null>(null);
   const [summaryStats, setSummaryStats] = useState<PublicStatsSummaryResponse | null>(null);
   const [trendData, setTrendData] = useState<EmissionDataPoint[]>([]);
+  const [trendDataByRange, setTrendDataByRange] = useState<TrendDataByRange>(emptyTrendDataByRange);
   const [monthlyTrend, setMonthlyTrend] = useState<EmissionDataPoint[]>([]);
   const [vehicleStats, setVehicleStats] = useState<PublicVehicleStatsResponse | null>(null);
   const [vehicleLoading, setVehicleLoading] = useState(false);
 
   const refreshData = useCallback(async () => {
     setSummaryStats(null);
+    setTrendDataByRange(emptyTrendDataByRange);
 
     const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error('Backend is waking up... Please wait.')), 25000),
@@ -42,6 +60,9 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
         apiService.getSummary(),
         apiService.getStats('monthly'),
         apiService.getLast7Days(),
+        apiService.getLast7Weeks(),
+        apiService.getLast12Months(),
+        apiService.getLast10Years(),
       ]);
 
       const results = (await Promise.race([resultsPromise, timeoutPromise])) as PromiseSettledResult<any>[];
@@ -52,9 +73,25 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
         setMonthlyTrend(transformToTrendData(results[1].value.data));
       }
 
-      if (results[2].status === 'fulfilled' && results[2].value?.data) {
-        setTrendData(transformToTrendData(results[2].value.data));
+      const nextTrendDataByRange: TrendDataByRange = { ...emptyTrendDataByRange };
+
+      const setRangeData = (range: TrendRange, result: PromiseSettledResult<PublicStatsResponse>) => {
+        if (result.status === 'fulfilled' && result.value?.data) {
+          nextTrendDataByRange[range] = transformToTrendData(result.value.data);
+        }
+      };
+
+      setRangeData('daily', results[2]);
+      setRangeData('weekly', results[3]);
+      setRangeData('monthly', results[4]);
+      setRangeData('yearly', results[5]);
+
+      if (nextTrendDataByRange.daily.length > 0) {
+        const dailyTrend = nextTrendDataByRange.daily;
+        setTrendData(dailyTrend);
       }
+
+      setTrendDataByRange(nextTrendDataByRange);
 
       setError(null);
     } catch (err) {
@@ -92,6 +129,7 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
       error,
       summaryStats,
       trendData,
+      trendDataByRange,
       monthlyTrend,
       vehicleStats,
       vehicleLoading,
@@ -99,7 +137,18 @@ export function DashboardDataProvider({ children }: DashboardDataProviderProps) 
       refreshData,
       setError,
     }),
-    [loading, error, summaryStats, trendData, monthlyTrend, vehicleStats, vehicleLoading, loadVehicleStats, refreshData],
+    [
+      loading,
+      error,
+      summaryStats,
+      trendData,
+      trendDataByRange,
+      monthlyTrend,
+      vehicleStats,
+      vehicleLoading,
+      loadVehicleStats,
+      refreshData,
+    ],
   );
 
   return <DashboardDataContext.Provider value={value}>{children}</DashboardDataContext.Provider>;

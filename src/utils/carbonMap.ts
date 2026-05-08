@@ -12,21 +12,21 @@ export interface CarbonFeatureProperties extends GeoJsonProperties {
 export type CarbonFeature = Feature<Geometry, CarbonFeatureProperties>;
 export type CarbonFeatureCollection = FeatureCollection<Geometry, CarbonFeatureProperties>;
 
-const stateAliases: Record<string, string> = {
-  andamanandnicobar: 'andamanandnicobarislands',
-  andamanandnicobarislands: 'andamanandnicobarislands',
-  dadraandnagarhaveli: 'dadraandnagarhavelianddamananddiu',
-  damananddiu: 'dadraandnagarhavelianddamananddiu',
-  delhi: 'nctofdelhi',
-  jammuandkashmir: 'jammuandkashmir',
-  ladakh: 'ladakh',
-  nctofdelhi: 'nctofdelhi',
-  odisha: 'odisha',
-  orissa: 'odisha',
-  pondicherry: 'puducherry',
-  puducherry: 'puducherry',
-  telangana: 'telangana',
-  telengana: 'telangana',
+/**
+ * Reusable alias mapping for mismatched state names between API and GeoJSON.
+ * Maps common variations to a standard display name.
+ */
+export const STATE_NAME_ALIASES: Record<string, string> = {
+  'New Delhi': 'Delhi',
+  'NCT of Delhi': 'Delhi',
+  'Orissa': 'Odisha',
+  'Pondicherry': 'Puducherry',
+  'J&K': 'Jammu and Kashmir',
+  'Jammu & Kashmir': 'Jammu and Kashmir',
+  'Telengana': 'Telangana',
+  'Andaman and Nicobar': 'Andaman and Nicobar Islands',
+  'Dadra and Nagar Haveli': 'Dadra and Nagar Haveli and Daman and Diu',
+  'Daman and Diu': 'Dadra and Nagar Haveli and Daman and Diu',
 };
 
 const displayNamesByKey: Record<string, string> = {
@@ -37,9 +37,8 @@ const displayNamesByKey: Record<string, string> = {
   bihar: 'Bihar',
   chandigarh: 'Chandigarh',
   chhattisgarh: 'Chhattisgarh',
-  dadraandnagarhaveli: 'Dadra and Nagar Haveli',
   dadraandnagarhavelianddamananddiu: 'Dadra and Nagar Haveli and Daman and Diu',
-  damananddiu: 'Daman and Diu',
+  delhi: 'Delhi',
   goa: 'Goa',
   gujarat: 'Gujarat',
   haryana: 'Haryana',
@@ -55,7 +54,6 @@ const displayNamesByKey: Record<string, string> = {
   meghalaya: 'Meghalaya',
   mizoram: 'Mizoram',
   nagaland: 'Nagaland',
-  nctofdelhi: 'NCT of Delhi',
   odisha: 'Odisha',
   puducherry: 'Puducherry',
   punjab: 'Punjab',
@@ -67,25 +65,54 @@ const displayNamesByKey: Record<string, string> = {
   uttarpradesh: 'Uttar Pradesh',
   uttarakhand: 'Uttarakhand',
   westbengal: 'West Bengal',
+  ladakh: 'Ladakh',
 };
 
+/**
+ * Helper to normalize state names into a consistent format (lowercase, no spaces, no special chars).
+ * This ensures that "New Delhi", "Delhi", and "NCT of Delhi" all match correctly.
+ */
 export function normalizeStateName(value = '') {
-  const normalized = value.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]/g, '');
+  if (!value) return '';
 
-  return stateAliases[normalized] ?? normalized;
+  // Basic normalization: lowercase, replace & with and, remove non-alphabetic chars
+  const base = value
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z]/g, '');
+
+  // Check against aliases
+  const aliasMatch = Object.entries(STATE_NAME_ALIASES).find(([alias]) => {
+    const normAlias = alias.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]/g, '');
+    return normAlias === base;
+  });
+
+  if (aliasMatch) {
+    // Return the normalized version of the target name
+    return aliasMatch[1].toLowerCase().replace(/&/g, 'and').replace(/[^a-z]/g, '');
+  }
+
+  return base;
 }
 
+/**
+ * Get a pretty display name for a given raw state name.
+ */
 function getDisplayStateName(value: string) {
-  const normalized = value.toLowerCase().replace(/&/g, 'and').replace(/[^a-z]/g, '');
-  const key = stateAliases[normalized] ?? normalized;
-
-  return displayNamesByKey[normalized] ?? displayNamesByKey[key] ?? value;
+  const normalized = normalizeStateName(value);
+  return displayNamesByKey[normalized] ?? value;
 }
 
+/**
+ * Extract state name from API response data point.
+ */
 function getApiStateName(item: StateStatsDataPoint) {
   return item.state ?? item.state_name ?? item.label ?? item.state_code ?? '';
 }
 
+/**
+ * Extract state name from GeoJSON feature properties.
+ */
 function getGeoJsonStateName(properties: GeoJsonProperties) {
   return String(
     properties?.NAME_1 ??
@@ -97,18 +124,32 @@ function getGeoJsonStateName(properties: GeoJsonProperties) {
   );
 }
 
+/**
+ * Merges backend carbon emission data with GeoJSON features for map rendering.
+ * Normalizes state names to ensure reliable matching across different data sources.
+ */
 export function mergeCarbonDataWithGeoJson(
   geoJson: FeatureCollection,
   carbonData: StateStatsDataPoint[],
 ): CarbonFeatureCollection {
+  // Find max carbon for intensity calculation
   const maxCarbonKg = Math.max(...carbonData.map((item) => item.carbon_kg), 0);
-  const carbonByState = new Map(
-    carbonData.map((item) => [normalizeStateName(getApiStateName(item)), item]),
-  );
+
+  // Map of normalized state name to its carbon data
+  const carbonByState = new Map<string, StateStatsDataPoint>();
+  carbonData.forEach((item) => {
+    const apiName = getApiStateName(item);
+    if (apiName) {
+      carbonByState.set(normalizeStateName(apiName), item);
+    }
+  });
 
   const features = geoJson.features.map((feature): CarbonFeature => {
     const rawStateName = getGeoJsonStateName(feature.properties);
-    const carbonStats = carbonByState.get(normalizeStateName(rawStateName));
+    const normalizedName = normalizeStateName(rawStateName);
+    const carbonStats = carbonByState.get(normalizedName);
+
+    // Convert snake_case API fields to camelCase frontend properties
     const carbonKg = carbonStats?.carbon_kg ?? 0;
     const distanceKm = carbonStats?.distance_km ?? 0;
 
@@ -127,6 +168,6 @@ export function mergeCarbonDataWithGeoJson(
 
   return {
     ...geoJson,
-    features,
-  };
+    features: features as CarbonFeature[],
+  } as CarbonFeatureCollection;
 }
