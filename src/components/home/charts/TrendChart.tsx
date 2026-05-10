@@ -60,15 +60,15 @@ export const TrendChart: React.FC<TrendChartProps> = ({ data, dataByRange, title
   };
 
   return (
-    <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm h-full flex flex-col">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h3 className="text-lg font-bold text-slate-800 tracking-tight">
+    <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-3xl border border-slate-100 shadow-sm h-full min-w-0 flex flex-col">
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start mb-6 sm:mb-8">
+        <div className="min-w-0">
+          <h3 className="text-base sm:text-lg font-bold text-slate-800 tracking-tight leading-snug">
             {selectedRange === 'daily' ? title : trendRanges[selectedRange].title}
           </h3>
           {rangeError && <p className="mt-1 text-xs font-medium text-red-500">{rangeError}</p>}
         </div>
-        <div className="flex flex-wrap justify-end gap-2">
+        <div className="grid grid-cols-2 min-[420px]:flex min-[420px]:flex-wrap sm:justify-end gap-2">
           {rangeOptions.map(([range, config]) => {
             const isSelected = selectedRange === range;
 
@@ -88,9 +88,9 @@ export const TrendChart: React.FC<TrendChartProps> = ({ data, dataByRange, title
           })}
         </div>
       </div>
-      <div className="flex-1 w-full min-h-[300px]">
+      <div className="w-full min-w-0 h-[280px] sm:h-[340px] lg:h-[360px]">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData} margin={{ left: 0, right: 32, top: 12, bottom: 8 }}>
+          <AreaChart data={chartData} margin={{ left: -12, right: 12, top: 12, bottom: 8 }}>
             <defs>
               <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>

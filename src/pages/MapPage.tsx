@@ -85,6 +85,15 @@ function formatNumber(value: number, maximumFractionDigits = 1) {
   return value.toLocaleString('en-IN', { maximumFractionDigits });
 }
 
+function formatCarbonKg(value: number) {
+  if (!Number.isFinite(value)) return '0';
+  if (value === 0) return '0';
+
+  return value.toLocaleString('en-IN', {
+    maximumFractionDigits: Math.abs(value) < 1 ? 6 : 3,
+  });
+}
+
 export default function MapPage() {
   const [range, setRange] = useState<CarbonRange>('today');
   const [indiaGeoJson, setIndiaGeoJson] = useState<FeatureCollection | null>(null);
@@ -228,7 +237,7 @@ export default function MapPage() {
                 <div className="min-w-44 text-sm">
                   <p className="font-bold text-slate-900">{hoverInfo.feature.properties.stateName}</p>
                   <p className="mt-1 text-slate-600">
-                    Carbon: <span className="font-semibold">{formatNumber(hoverInfo.feature.properties.carbonKg)} kg</span>
+                    Carbon: <span className="font-semibold">{formatCarbonKg(hoverInfo.feature.properties.carbonKg)} kg</span>
                   </p>
                   <p className="text-slate-600">
                     Distance:{' '}
