@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { VehicleEmission } from '@/types';
 import { motion, AnimatePresence } from 'motion/react';
@@ -10,6 +10,14 @@ interface VehiclePieChartProps {
 
 export const VehiclePieChart: React.FC<VehiclePieChartProps> = ({ data }) => {
   const [activeTypes, setActiveTypes] = useState<string[]>(data.map(d => d.type));
+
+  useEffect(() => {
+    setActiveTypes((prev) => {
+      const availableTypes = data.map(d => d.type);
+      if (prev.length > 0 || availableTypes.length === 0) return prev;
+      return availableTypes;
+    });
+  }, [data]);
 
   const toggleType = (type: string) => {
     setActiveTypes(prev => 
@@ -23,18 +31,18 @@ export const VehiclePieChart: React.FC<VehiclePieChartProps> = ({ data }) => {
   const totalEmissions = filteredData.reduce((sum, d) => sum + d.emissions, 0);
 
   return (
-    <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm h-full flex flex-col">
-      <h2 className="text-lg font-bold text-slate-800 tracking-tight mb-8 text-center uppercase tracking-widest text-[10px]">Vehicle Composition</h2>
+    <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-3xl border border-slate-100 shadow-sm h-full min-w-0 flex flex-col">
+      <h2 className="font-bold text-slate-800 mb-6 sm:mb-8 text-center uppercase tracking-widest text-[10px]">Vehicle Composition</h2>
       
-      <div className="flex-1 w-full min-h-[300px] relative">
+      <div className="w-full min-w-0 h-[260px] sm:h-[320px] lg:h-[300px] relative">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={filteredData}
               cx="50%"
               cy="50%"
-              innerRadius={70}
-              outerRadius={100}
+              innerRadius="48%"
+              outerRadius="70%"
               paddingAngle={filteredData.length > 1 ? 5 : 0}
               dataKey="emissions"
               nameKey="type"
@@ -69,7 +77,7 @@ export const VehiclePieChart: React.FC<VehiclePieChartProps> = ({ data }) => {
       </div>
 
       {/* Interactive Legend / Filter */}
-      <div className="mt-8 grid grid-cols-2 lg:grid-cols-1 gap-2">
+      <div className="mt-6 sm:mt-8 grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-1 gap-2">
         {data.map((item) => {
           const isActive = activeTypes.includes(item.type);
           return (
@@ -77,19 +85,19 @@ export const VehiclePieChart: React.FC<VehiclePieChartProps> = ({ data }) => {
               key={item.type}
               onClick={() => toggleType(item.type)}
               className={cn(
-                "flex items-center justify-between p-2 rounded-xl transition-all duration-200 group text-left",
+                "flex min-w-0 items-center justify-between gap-3 p-2 rounded-xl transition-all duration-200 group text-left",
                 isActive ? "bg-slate-50 border border-slate-100" : "opacity-40 grayscale border border-transparent"
               )}
             >
-              <div className="flex items-center">
+              <div className="flex min-w-0 items-center">
                 <div 
                   className="w-2.5 h-2.5 rounded-full mr-3 shadow-sm transition-transform group-hover:scale-125" 
                   style={{ backgroundColor: item.color }}
                 />
-                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-tight">{item.type}</span>
+                <span className="truncate text-[11px] font-bold text-slate-600 uppercase tracking-tight">{item.type}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-mono font-bold text-slate-900">{item.emissions}%</span>
+              <div className="flex shrink-0 items-center gap-2">
+                <span className="text-[11px] font-mono font-bold text-slate-900">{item.emissions.toFixed(2)}%</span>
                 <div className={cn(
                   "w-4 h-4 rounded flex items-center justify-center transition-colors",
                   isActive ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-400"

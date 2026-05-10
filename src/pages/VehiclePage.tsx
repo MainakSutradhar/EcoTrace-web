@@ -34,11 +34,11 @@ export default function VehiclePage() {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-8 max-w-4xl mx-auto"
+      className="w-full max-w-4xl mx-auto px-0 sm:px-4 lg:px-8"
     >
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Vehicle Analysis</h1>
-        <p className="text-slate-50 mt-2">Distribution of carbon emissions by vehicle type.</p>
+      <header className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight leading-tight">Vehicle Analysis</h1>
+        <p className="text-slate-500 mt-2">Distribution of carbon emissions by vehicle type.</p>
       </header>
 
       {vehicleLoading ? (
@@ -46,8 +46,8 @@ export default function VehiclePage() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          <div className="h-[500px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start">
+          <div className="vehicle-chart-frame">
              <VehiclePieChart data={chartData} />
           </div>
           
